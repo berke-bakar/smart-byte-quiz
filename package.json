@@ -1,0 +1,12 @@
+{
+  "name": "@theloneprogrammer/wait-trivia",
+  "version": "0.0.1",
+  "bin": "./bin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["quiz", "trivia"],
+  "author": "Berke Bakar",
+  "license": "ISC",
+  "description": "Waiting for CI/CD pipeline? Or perhaps tests are taking too long? While waiting, enjoy yourself with some fun trivia."
+}
