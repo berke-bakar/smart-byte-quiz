@@ -1,12 +1,22 @@
 {
   "name": "@theloneprogrammer/wait-trivia",
   "version": "0.0.1",
-  "bin": "./bin.js",
+  "bin": {
+    "wait-trivia": "./bin/bin.js"
+  },
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["quiz", "trivia"],
+  "keywords": [
+    "quiz",
+    "trivia"
+  ],
   "author": "Berke Bakar",
   "license": "ISC",
-  "description": "Waiting for CI/CD pipeline? Or perhaps tests are taking too long? While waiting, enjoy yourself with some fun trivia."
+  "description": "Waiting for CI/CD pipeline? Or perhaps tests are taking too long? While waiting, enjoy yourself with some fun trivia.",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "chalk-animation": "^2.0.3"
+  }
 }
