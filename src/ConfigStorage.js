@@ -8,6 +8,8 @@ import os from 'os';
  * instance called ConfigInstance and can be used as a client-store.
  */
 class ConfigStorage {
+  #configFilePath
+  #data
   /**
    * constructor
    * 
@@ -18,21 +20,20 @@ class ConfigStorage {
   constructor(configFileName, defaultConfig = {}) {
     // Check if an instance exists already
     if (!ConfigStorage.instance) {
-      this.configFileName = configFileName;
-      this.configFilePath = this.getDefaultConfigFilePath(configFileName);
-      this.data = {};
+      this.#configFilePath = this.#getDefaultConfigFilePath(configFileName);
+      this.#data = {};
 
       // Load existing config if config file exists
-      if (fs.existsSync(this.configFilePath)) {
+      if (fs.existsSync(this.#configFilePath)) {
         try {
-          const configFileContent = fs.readFileSync(this.configFilePath, 'utf8');
-          this.data = JSON.parse(configFileContent);
+          const configFileContent = fs.readFileSync(this.#configFilePath, 'utf8');
+          this.#data = JSON.parse(configFileContent);
         } catch (err) {
-          console.error(`Error reading configurations at: ${this.configFilePath}:`, err);
+          console.error(`Error reading configurations at: ${this.#configFilePath}:`, err);
         }
       } else {
         // Use defaultConfig param if config file does not exists
-        this.data = defaultConfig;
+        this.#data = defaultConfig;
 
         // Save default config to file
         this.#saveConfig();
@@ -52,7 +53,7 @@ class ConfigStorage {
    * @param {string} configFileName file name to append at the end of default os path
    * @returns a default path to save config file, based on user's OS.
    */
-  getDefaultConfigFilePath(configFileName) {
+  #getDefaultConfigFilePath(configFileName) {
     const platform = os.platform();
     let configDir;
 
@@ -83,7 +84,7 @@ class ConfigStorage {
    * @returns value of given key from in memory, not config file
    */
   get(key) {
-    return this.data[key];
+    return this.#data[key];
   }
 
   /**
@@ -95,10 +96,10 @@ class ConfigStorage {
    */
   set(key, value) {
     // Save old value in case of file write fail
-    const oldValue = this.data[key]
+    const oldValue = this.#data[key]
 
     // Update value in memory
-    this.data[key] = value;
+    this.#data[key] = value;
 
     // Update file contents
     const updateResult = this.#saveConfig()
@@ -106,7 +107,7 @@ class ConfigStorage {
     // Revert if fail, for keeping both sides consistent
     if (!updateResult.result) {
       // Revert to oldValue
-      this.data[key] = oldValue;
+      this.#data[key] = oldValue;
     }
 
     // return same result as file update, let the user handle what to do
@@ -121,7 +122,7 @@ class ConfigStorage {
   #saveConfig() {
     try {
       // Try to write to file
-      fs.writeFileSync(this.configFilePath, JSON.stringify(this.data, null, 2), 'utf8');
+      fs.writeFileSync(this.#configFilePath, JSON.stringify(this.#data, null, 2), 'utf8');
 
       // Return success
       return { result: true }
