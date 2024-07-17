@@ -136,7 +136,8 @@ class ConfigStorage {
 
 const configFileName = 'wait-trivia_config.json';
 const defaultConfig = {
-  // TODO: Fill default config
+  difficulty: [],
+  limit: 10,
 };
 
 // Singleton instance
