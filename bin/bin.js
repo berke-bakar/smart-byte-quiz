@@ -21,9 +21,15 @@ async function main() {
         state = GameStates[selection]
         break
       case GameStates.SETTINGS:
-        const changes = await showSettingsPage()
+        const changes = await showSettingsPage(ConfigInstance.get('difficulty'), ConfigInstance.get('limit'))
         if (changes) {
-          ConfigInstance.setBatch(changes)
+          const updateResult = ConfigInstance.setBatch(changes)
+          if (updateResult.result) {
+            console.log('Settings updated.')
+          }
+          else {
+            console.error('Settings update failed.')
+          }
         }
         state = GameStates.MENU
         break

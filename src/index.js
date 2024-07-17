@@ -1,5 +1,7 @@
-import figlet from "figlet"
+import figlet from "figlet";
 import expand from '@inquirer/expand';
+import checkbox from '@inquirer/checkbox';
+import input from '@inquirer/input'
 
 export const GameStates = Object.freeze({
   TITLE: 0,
@@ -11,7 +13,7 @@ export const GameStates = Object.freeze({
   QUIT: 99,
 })
 
-const optionSymbols = ['a', 'b', 'c', 'd']
+const OPTION_SYMBOLS = ['a', 'b', 'c', 'd']
 
 export function showTitlePage() {
   console.log(
@@ -58,8 +60,34 @@ export async function showMenuPage() {
   return answer
 }
 
-export async function showSettingsPage() {
-
+export async function showSettingsPage(currentDifficulties = [], currentLimit) {
+  if (currentDifficulties.length === 0) {
+    currentDifficulties.push('easy', 'medium', 'hard')
+  }
+  let changes = {
+    difficulty: await checkbox({
+      message: 'Select question difficulties:',
+      choices: [
+        { name: 'easy', value: 'easy', checked: currentDifficulties.includes('easy') },
+        { name: 'medium', value: 'medium', checked: currentDifficulties.includes('medium') },
+        { name: 'hard', value: 'hard', checked: currentDifficulties.includes('hard') },
+      ],
+      required: false,
+      loop: true
+    }),
+    limit: await input({
+      message: 'Number of questions per game? (1-50)', required: false, default: currentLimit, validate: (item) => {
+        try {
+          const numberForm = Number.parseInt(item)
+          return (numberForm == item && Number.isSafeInteger(numberForm) && numberForm > 0 && numberForm <= 50)
+        }
+        catch (e) {
+          return false
+        }
+      },
+    }),
+  }
+  return changes
 }
 
 export async function showPlayPage(questions) {
@@ -76,7 +104,7 @@ export async function showPlayPage(questions) {
     const questionBanner = generateQuestionFiglet(index + 1)
 
     const choices = shuffle([question.correctAnswer, ...question.incorrectAnswers]).map((child, ind) => {
-      return { key: optionSymbols[ind], name: child, value: child }
+      return { key: OPTION_SYMBOLS[ind], name: child, value: child }
     })
     // Clear console output
     console.log('\x1Bc')
