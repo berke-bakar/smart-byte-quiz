@@ -16,7 +16,11 @@
   "license": "ISC",
   "description": "Waiting for CI/CD pipeline? Or perhaps tests are taking too long? While waiting, enjoy yourself with some fun trivia.",
   "dependencies": {
+    "@inquirer/core": "^9.0.2",
+    "@inquirer/expand": "^2.1.15",
     "chalk": "^5.3.0",
-    "chalk-animation": "^2.0.3"
+    "chalk-animation": "^2.0.3",
+    "figlet": "^1.7.0",
+    "yoctocolors": "^2.1.1"
   }
 }
