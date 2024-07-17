@@ -114,6 +114,22 @@ class ConfigStorage {
     return updateResult
   }
 
+  setBatch(batch) {
+    const oldValues = {}
+    for (const key in batch) {
+      oldValues[key] = this.#data[key]
+      this.#data[key] = batch[key]
+    }
+    const updateResult = this.#saveConfig()
+    if (!updateResult.result) {
+      for (const key in oldValues) {
+        this.#data[key] = oldValues[key]
+      }
+    }
+
+    return updateResult
+  }
+
   /**
    * Save current config to file
    * 
@@ -137,7 +153,8 @@ class ConfigStorage {
 const configFileName = 'wait-trivia_config.json';
 const defaultConfig = {
   difficulty: [],
-  limit: 10,
+  // TODO: Don;t forget to change back
+  limit: 2,
 };
 
 // Singleton instance
