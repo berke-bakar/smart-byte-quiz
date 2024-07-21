@@ -5,7 +5,7 @@ import input from '@inquirer/input'
 import confirm from '@inquirer/confirm'
 import chalk from 'chalk'
 import gradient from "gradient-string";
-import { GameStates, GameTexts, API_URL, GRADIENTS, MAX_API_QUESTION_LIMIT, MENU_OPTIONS } from "./Constants.js";
+import { GameStates, GameTexts, API_URL, GRADIENTS, MAX_API_QUESTION_LIMIT, MENU_OPTIONS, RESULTS } from "./Constants.js";
 
 export function showTitlePage() {
   // Print title and subtext
@@ -119,9 +119,12 @@ export async function showPlayPage(questions) {
 }
 
 export async function showResultsPage(results) {
+  // Calculate final result and index of text to show
+  const finalResult = (results.corrects / (results.incorrects + results.corrects)) * 100
+  let textIndex = finalResult !== 0 ? Math.ceil(finalResult / (100 / RESULTS.length) - 1) : 0
+
   // Print result title
-  // TODO: Based on score change text
-  console.log(generateGradientOptionFiglet('Congrats!'))
+  console.log(generateGradientOptionFiglet(RESULTS[textIndex]))
 
   // Print results to console with style
   console.log(`${chalk.blueBright("Results")}`)
@@ -129,7 +132,7 @@ export async function showResultsPage(results) {
   console.log(`${chalk.green("Correct:")} ${results.corrects}`)
   console.log(`${chalk.red("Incorrect:")} ${results.incorrects}`)
   console.log(`${chalk.blueBright("===============")}`)
-  console.log(`You got ${(results.corrects / (results.incorrects + results.corrects) * 100).toFixed(2)}% of questions right.`)
+  console.log(`You got ${finalResult.toFixed(2)}% of questions right.`)
 
   // Ask for a rematch
   const answer = await confirm({ message: GameTexts.PLAY_AGAIN });

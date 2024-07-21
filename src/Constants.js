@@ -61,3 +61,11 @@ export const GRADIENTS = Object.freeze([
   'pastel',
   'rainbow',
 ])
+
+export const RESULTS = Object.freeze([
+  'Needs Practice',
+  'Better Luck',
+  'Almost There',
+  'Congrats!',
+  'Perfect!',
+])
