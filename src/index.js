@@ -2,30 +2,41 @@ import figlet from "figlet";
 import expand from '@inquirer/expand';
 import checkbox from '@inquirer/checkbox';
 import input from '@inquirer/input'
+import confirm from '@inquirer/confirm'
+import chalk from 'chalk'
+import gradient from "gradient-string";
 
 export const GameStates = Object.freeze({
-  TITLE: 0,
-  MENU: 1,
-  SETTINGS: 2,
-  PLAY: 3,
-  AGAIN: 4,
-  CREDITS: 5,
-  QUIT: 99,
+  TITLE: 'TITLE',
+  MENU: 'MENU',
+  SETTINGS: 'SETTINGS',
+  PLAY: 'PLAY',
+  RESULT: 'RESULT',
+  CREDITS: 'CREDITS',
+  HOWTO: 'HOWTO',
+  QUIT: 'QUIT',
 })
 
 const OPTION_SYMBOLS = ['a', 'b', 'c', 'd']
+const GRADIENTS = [
+  'teen',
+  'mind',
+  'morning',
+  'vice',
+  'passion',
+  'fruit',
+  'instagram',
+  'atlas',
+  'retro',
+  'summer',
+  'pastel',
+  'rainbow',
+]
+const MAX_API_QUESTION_LIMIT = 50
 
 export function showTitlePage() {
-  console.log(
-    figlet.textSync("Wait Trivia", {
-      font: "colossal",
-      horizontalLayout: "default",
-      verticalLayout: "default",
-      width: 120,
-    }),
-    '\n',
-    "Why not have fun while waiting"
-  );
+  console.log(generateGradientOptionFiglet('Wait Trivia'))
+  console.log('Why not have fun while waiting')
 }
 
 export async function showMenuPage() {
@@ -36,22 +47,27 @@ export async function showMenuPage() {
       {
         key: '1',
         name: 'Play Game',
-        value: 'PLAY',
+        value: GameStates.PLAY,
       },
       {
         key: '2',
-        name: 'Settings',
-        value: 'SETTINGS',
+        name: 'How to Play?',
+        value: GameStates.HOWTO
       },
       {
         key: '3',
-        name: 'Credits',
-        value: 'CREDITS',
+        name: 'Settings',
+        value: GameStates.SETTINGS,
       },
       {
         key: '4',
+        name: 'Credits',
+        value: GameStates.CREDITS,
+      },
+      {
+        key: '5',
         name: 'Quit Game',
-        value: 'QUIT',
+        value: GameStates.QUIT,
       },
     ],
     expanded: true
@@ -61,9 +77,16 @@ export async function showMenuPage() {
 }
 
 export async function showSettingsPage(currentDifficulties = [], currentLimit) {
+  // Print title
+  console.log(generateGradientOptionFiglet('Settings'))
+
+  // Fill the difficulties array if it is empty
+  // Empty means all difficulties are allowed
   if (currentDifficulties.length === 0) {
     currentDifficulties.push('easy', 'medium', 'hard')
   }
+
+  // Save user selections in an object
   let changes = {
     difficulty: await checkbox({
       message: 'Select question difficulties:',
@@ -76,10 +99,21 @@ export async function showSettingsPage(currentDifficulties = [], currentLimit) {
       loop: true
     }),
     limit: await input({
-      message: 'Number of questions per game? (1-50)', required: false, default: currentLimit, validate: (item) => {
+      message: 'Number of questions per game? (1-50)',
+      required: false,
+      default: currentLimit, // Default value is the currently saved value
+      validate: (item) => {
         try {
+          // Try to parse the input as a number
           const numberForm = Number.parseInt(item)
-          return (numberForm == item && Number.isSafeInteger(numberForm) && numberForm > 0 && numberForm <= 50)
+
+          // Check if it is a valid number
+          return (
+            numberForm == item &&
+            Number.isSafeInteger(numberForm) &&
+            numberForm > 0 &&
+            numberForm <= MAX_API_QUESTION_LIMIT
+          )
         }
         catch (e) {
           return false
@@ -101,13 +135,11 @@ export async function showPlayPage(questions) {
   }
 
   for (const [index, question] of questions.entries()) {
-    const questionBanner = generateQuestionFiglet(index + 1)
+    const questionBanner = generateGradientOptionFiglet(`Question ${index + 1}`)
 
     const choices = shuffle([question.correctAnswer, ...question.incorrectAnswers]).map((child, ind) => {
       return { key: OPTION_SYMBOLS[ind], name: child, value: child }
     })
-    // Clear console output
-    console.log('\x1Bc')
     console.log(questionBanner)
     const answer = await expand({
       message: question.question.text,
@@ -128,15 +160,36 @@ export async function showPlayPage(questions) {
   return results
 }
 
-export async function showAgainPage() {
-  console.log('\x1Bc')
-  console.log(figlet.textSync('Wanna play again?', {
-    horizontalLayout: 'full'
-  }))
+export async function showResultsPage(results) {
+  // Print title
+  console.log(generateGradientOptionFiglet('Congrats!'))
 
+  // Print results to console
+  console.log(`${chalk.blueBright("Results")}`)
+  console.log(`${chalk.blueBright("===============")}`)
+  console.log(`${chalk.green("Correct:")} ${results.corrects}`)
+  console.log(`${chalk.red("Incorrect:")} ${results.incorrects}`)
+  console.log(`${chalk.blueBright("===============")}`)
+  console.log(`You got ${(results.corrects / (results.incorrects + results.corrects) * 100).toFixed(2)}% of questions right.`)
+  const answer = await confirm({ message: 'Play again?' });
+
+  return answer ? GameStates.PLAY : GameStates.TITLE
 }
 
 export async function showCreditsPage() {
+  // Print title
+  console.log(generateGradientOptionFiglet('Credits'))
+
+  // Wait for input
+  await input({
+    message: '',
+    theme: {
+      prefix: '',
+    }
+  })
+}
+
+export async function showHowToPage() {
 
 }
 
@@ -157,20 +210,22 @@ export async function fetchQuestions(difficulty = [], limit = 10) {
     return questions
   } catch (err) {
     console.error('An error happened while getting questions from The Trivia API.')
-    // console.error(err)
     return []
   }
 }
 
-function generateQuestionFiglet(id) {
-  return figlet.textSync(`Question ${id}`, {
+function generateGradientOptionFiglet(text) {
+  const randomGradient = GRADIENTS[Math.floor(Math.random() * GRADIENTS.length)]
+  const figletText = figlet.textSync(text, {
     font: "Standard",
     horizontalLayout: "default",
     verticalLayout: "default",
     width: 120,
   })
+  return `\x1Bc\n${gradient[randomGradient].multiline(figletText)}`
 }
 
+// Fisher-Yates shuffle
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 1));

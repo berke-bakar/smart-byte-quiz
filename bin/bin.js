@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import ConfigInstance from "../src/ConfigStorage.js"
-import { GameStates, showAgainPage, showCreditsPage, showMenuPage, showPlayPage, showSettingsPage, showTitlePage, fetchQuestions } from "../src/index.js";
+import { GameStates, showResultsPage, showCreditsPage, showMenuPage, showPlayPage, showSettingsPage, showTitlePage, fetchQuestions, showHowToPage } from "../src/index.js";
 
 
 async function main() {
@@ -31,7 +31,7 @@ async function main() {
             console.error('Settings update failed.')
           }
         }
-        state = GameStates.MENU
+        state = GameStates.TITLE
         break
       case GameStates.PLAY:
         // Reset game score
@@ -40,18 +40,22 @@ async function main() {
         const questions = await fetchQuestions(ConfigInstance.get('difficulty'), ConfigInstance.get('limit'))
         if (questions.length !== 0) {
           results = await showPlayPage(questions)
-          state = GameStates.AGAIN
+          state = GameStates.RESULT
         } else {
-          state = GameStates.MENU
+          state = GameStates.TITLE
         }
         break
-      case GameStates.AGAIN:
-        const userChoice = await showAgainPage(results)
+      case GameStates.RESULT:
+        const userChoice = await showResultsPage(results)
         state = GameStates[userChoice]
         break
       case GameStates.CREDITS:
         await showCreditsPage()
-        state = GameStates.MENU
+        state = GameStates.TITLE
+        break
+      case GameStates.HOWTO:
+        await showHowToPage()
+        state = GameStates.TITLE
         break
       default:
         // State is QUIT, but just in case
