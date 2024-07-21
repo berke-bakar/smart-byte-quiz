@@ -5,71 +5,18 @@ import input from '@inquirer/input'
 import confirm from '@inquirer/confirm'
 import chalk from 'chalk'
 import gradient from "gradient-string";
-
-export const GameStates = Object.freeze({
-  TITLE: 'TITLE',
-  MENU: 'MENU',
-  SETTINGS: 'SETTINGS',
-  PLAY: 'PLAY',
-  RESULT: 'RESULT',
-  CREDITS: 'CREDITS',
-  HOWTO: 'HOWTO',
-  QUIT: 'QUIT',
-})
-
-const OPTION_SYMBOLS = ['a', 'b', 'c', 'd']
-const GRADIENTS = [
-  'teen',
-  'mind',
-  'morning',
-  'vice',
-  'passion',
-  'fruit',
-  'instagram',
-  'atlas',
-  'retro',
-  'summer',
-  'pastel',
-  'rainbow',
-]
-const MAX_API_QUESTION_LIMIT = 50
+import { GameStates, GameTexts, GRADIENTS, MAX_API_QUESTION_LIMIT, MENU_OPTIONS, OPTION_SYMBOLS } from "./Constants.js";
 
 export function showTitlePage() {
-  console.log(generateGradientOptionFiglet('Wait Trivia'))
-  console.log('Why not have fun while waiting')
+  console.log(generateGradientOptionFiglet(GameTexts.APP_NAME))
+  console.log(GameTexts.APP_SUBTEXT)
 }
 
 export async function showMenuPage() {
   const answer = await expand({
-    message: "Ready to challenge yourself?",
+    message: GameTexts.MENU_TEXT,
     default: '1',
-    choices: [
-      {
-        key: '1',
-        name: 'Play Game',
-        value: GameStates.PLAY,
-      },
-      {
-        key: '2',
-        name: 'How to Play?',
-        value: GameStates.HOWTO
-      },
-      {
-        key: '3',
-        name: 'Settings',
-        value: GameStates.SETTINGS,
-      },
-      {
-        key: '4',
-        name: 'Credits',
-        value: GameStates.CREDITS,
-      },
-      {
-        key: '5',
-        name: 'Quit Game',
-        value: GameStates.QUIT,
-      },
-    ],
+    choices: MENU_OPTIONS,
     expanded: true
   });
 
@@ -89,7 +36,7 @@ export async function showSettingsPage(currentDifficulties = [], currentLimit) {
   // Save user selections in an object
   let changes = {
     difficulty: await checkbox({
-      message: 'Select question difficulties:',
+      message: GameTexts.SETTINGS_DIFFICULTY,
       choices: [
         { name: 'easy', value: 'easy', checked: currentDifficulties.includes('easy') },
         { name: 'medium', value: 'medium', checked: currentDifficulties.includes('medium') },
@@ -99,7 +46,7 @@ export async function showSettingsPage(currentDifficulties = [], currentLimit) {
       loop: true
     }),
     limit: await input({
-      message: 'Number of questions per game? (1-50)',
+      message: GameTexts.SETTINGS_LIMIT,
       required: false,
       default: currentLimit, // Default value is the currently saved value
       validate: (item) => {
@@ -171,7 +118,7 @@ export async function showResultsPage(results) {
   console.log(`${chalk.red("Incorrect:")} ${results.incorrects}`)
   console.log(`${chalk.blueBright("===============")}`)
   console.log(`You got ${(results.corrects / (results.incorrects + results.corrects) * 100).toFixed(2)}% of questions right.`)
-  const answer = await confirm({ message: 'Play again?' });
+  const answer = await confirm({ message: GameTexts.PLAY_AGAIN });
 
   return answer ? GameStates.PLAY : GameStates.TITLE
 }
