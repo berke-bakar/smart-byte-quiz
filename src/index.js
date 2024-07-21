@@ -10,7 +10,7 @@ import { GameStates, GameTexts, API_URL, GRADIENTS, MAX_API_QUESTION_LIMIT, MENU
 export function showTitlePage() {
   // Print title and subtext
   console.log(generateGradientOptionFiglet(GameTexts.APP_NAME))
-  console.log(GameTexts.APP_SUBTEXT)
+  console.log(GameTexts.APP_SUBTEXT, '\n')
 }
 
 export async function showMenuPage() {

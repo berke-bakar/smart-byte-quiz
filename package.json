@@ -1,8 +1,8 @@
 {
-  "name": "@theloneprogrammer/wait-trivia",
+  "name": "smart-byte-quiz",
   "version": "0.0.1",
   "bin": {
-    "wait-trivia": "./bin/bin.js"
+    "smart-byte-quiz": "./bin/bin.js"
   },
   "type": "module",
   "scripts": {
@@ -10,7 +10,8 @@
   },
   "keywords": [
     "quiz",
-    "trivia"
+    "trivia",
+    "general knowledge"
   ],
   "author": "Berke Bakar",
   "license": "ISC",

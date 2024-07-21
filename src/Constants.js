@@ -14,8 +14,8 @@ export const GameStates = Object.freeze({
 })
 
 export const GameTexts = Object.freeze({
-  APP_NAME: 'Wait Trivia',
-  APP_SUBTEXT: 'Why not have fun while waiting',
+  APP_NAME: 'Smart Byte Quiz',
+  APP_SUBTEXT: '  Fun While You Compile',
   MENU_TEXT: 'Ready to challenge yourself?',
   SETTINGS_DIFFICULTY: 'Select question difficulties:',
   SETTINGS_LIMIT: `Number of questions per game? (1-${MAX_API_QUESTION_LIMIT})`,
