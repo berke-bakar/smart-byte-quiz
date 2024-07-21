@@ -1,3 +1,5 @@
+import terminalLink from "terminal-link"
+
 export const API_URL = 'https://the-trivia-api.com/v2/questions'
 export const MAX_API_QUESTION_LIMIT = 50
 
@@ -8,7 +10,6 @@ export const GameStates = Object.freeze({
   PLAY: 'PLAY',
   RESULT: 'RESULT',
   CREDITS: 'CREDITS',
-  HOWTO: 'HOWTO',
   QUIT: 'QUIT',
 })
 
@@ -19,6 +20,8 @@ export const GameTexts = Object.freeze({
   SETTINGS_DIFFICULTY: 'Select question difficulties:',
   SETTINGS_LIMIT: `Number of questions per game? (1-${MAX_API_QUESTION_LIMIT})`,
   PLAY_AGAIN: 'Play again?',
+  CREDITS: `Questions come from ${terminalLink('The Trivia API', 'https://the-trivia-api.com/')},\nwhich I'm not affiliated with.`,
+  CREDITS_THANKS: '\nThank you for playing...\n',
 })
 
 export const MENU_OPTIONS = Object.freeze([
@@ -29,31 +32,19 @@ export const MENU_OPTIONS = Object.freeze([
   },
   {
     key: '2',
-    name: 'How to Play?',
-    value: GameStates.HOWTO
-  },
-  {
-    key: '3',
     name: 'Settings',
     value: GameStates.SETTINGS,
   },
   {
-    key: '4',
+    key: '3',
     name: 'Credits',
     value: GameStates.CREDITS,
   },
   {
-    key: '5',
+    key: '4',
     name: 'Quit Game',
     value: GameStates.QUIT,
   },
-])
-
-export const OPTION_SYMBOLS = Object.freeze([
-  'a',
-  'b',
-  'c',
-  'd'
 ])
 
 export const GRADIENTS = Object.freeze([

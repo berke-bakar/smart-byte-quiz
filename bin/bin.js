@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import ConfigInstance from "../src/ConfigStorage.js"
 import { GameStates } from "../src/Constants.js";
-import { showResultsPage, showCreditsPage, showMenuPage, showPlayPage, showSettingsPage, showTitlePage, fetchQuestions, showHowToPage } from "../src/index.js";
+import { showResultsPage, showCreditsPage, showMenuPage, showPlayPage, showSettingsPage, showTitlePage, fetchQuestions } from "../src/index.js";
 
 async function main() {
   let state = GameStates.TITLE;
@@ -51,10 +51,6 @@ async function main() {
         break
       case GameStates.CREDITS:
         await showCreditsPage()
-        state = GameStates.TITLE
-        break
-      case GameStates.HOWTO:
-        await showHowToPage()
         state = GameStates.TITLE
         break
       default:

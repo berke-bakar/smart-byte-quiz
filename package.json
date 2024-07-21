@@ -25,6 +25,7 @@
     "chalk-animation": "^2.0.3",
     "figlet": "^1.7.0",
     "gradient-string": "^2.0.2",
+    "terminal-link": "^3.0.0",
     "yoctocolors": "^2.1.1"
   }
 }

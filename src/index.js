@@ -5,7 +5,7 @@ import input from '@inquirer/input'
 import confirm from '@inquirer/confirm'
 import chalk from 'chalk'
 import gradient from "gradient-string";
-import { GameStates, GameTexts, API_URL, GRADIENTS, MAX_API_QUESTION_LIMIT, MENU_OPTIONS, OPTION_SYMBOLS } from "./Constants.js";
+import { GameStates, GameTexts, API_URL, GRADIENTS, MAX_API_QUESTION_LIMIT, MENU_OPTIONS } from "./Constants.js";
 
 export function showTitlePage() {
   // Print title and subtext
@@ -94,7 +94,7 @@ export async function showPlayPage(questions) {
 
     // Shuffle the questions
     const choices = shuffle([question.correctAnswer, ...question.incorrectAnswers]).map((child, ind) => {
-      return { key: OPTION_SYMBOLS[ind], name: child, value: child }
+      return { key: String(ind + 1), name: child, value: child }
     })
 
     // Ask the question to user
@@ -139,8 +139,10 @@ export async function showResultsPage(results) {
 }
 
 export async function showCreditsPage() {
-  // Print title
+  // Print title, API attribution and thanks
   console.log(generateGradientOptionFiglet('Credits'))
+  console.log(GameTexts.CREDITS)
+  console.log(GameTexts.CREDITS_THANKS)
 
   // Wait for input
   await input({
@@ -149,10 +151,6 @@ export async function showCreditsPage() {
       prefix: '',
     }
   })
-}
-
-export async function showHowToPage() {
-
 }
 
 export async function fetchQuestions(difficulty = [], limit = 10) {
