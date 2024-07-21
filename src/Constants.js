@@ -1,3 +1,4 @@
+export const API_URL = 'https://the-trivia-api.com/v2/questions'
 export const MAX_API_QUESTION_LIMIT = 50
 
 export const GameStates = Object.freeze({

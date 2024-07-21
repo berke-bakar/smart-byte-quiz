@@ -5,14 +5,16 @@ import input from '@inquirer/input'
 import confirm from '@inquirer/confirm'
 import chalk from 'chalk'
 import gradient from "gradient-string";
-import { GameStates, GameTexts, GRADIENTS, MAX_API_QUESTION_LIMIT, MENU_OPTIONS, OPTION_SYMBOLS } from "./Constants.js";
+import { GameStates, GameTexts, API_URL, GRADIENTS, MAX_API_QUESTION_LIMIT, MENU_OPTIONS, OPTION_SYMBOLS } from "./Constants.js";
 
 export function showTitlePage() {
+  // Print title and subtext
   console.log(generateGradientOptionFiglet(GameTexts.APP_NAME))
   console.log(GameTexts.APP_SUBTEXT)
 }
 
 export async function showMenuPage() {
+  // Print menu options and wait for input
   const answer = await expand({
     message: GameTexts.MENU_TEXT,
     default: '1',
@@ -54,47 +56,56 @@ export async function showSettingsPage(currentDifficulties = [], currentLimit) {
           // Try to parse the input as a number
           const numberForm = Number.parseInt(item)
 
-          // Check if it is a valid number
+          // Check if it is a valid number or not
           return (
-            numberForm == item &&
-            Number.isSafeInteger(numberForm) &&
-            numberForm > 0 &&
-            numberForm <= MAX_API_QUESTION_LIMIT
+            numberForm == item &&                // See if parsed input is same as entered text
+            Number.isSafeInteger(numberForm) &&  // Check if entered value is an integer
+            numberForm > 0 &&                    // Lower range validation
+            numberForm <= MAX_API_QUESTION_LIMIT // Upper range validation
           )
         }
         catch (e) {
+          // Can't parse input properly
           return false
         }
       },
     }),
   }
+
   return changes
 }
 
 export async function showPlayPage(questions) {
+  // Input validation
   if (!Array.isArray(questions) || questions.length == 0) {
     throw new Error('Questions must be a non-empty array.')
   }
 
+  // Initialize results
   const results = {
     corrects: 0,
     incorrects: 0
   }
 
+  // Ask questions, record results
   for (const [index, question] of questions.entries()) {
+    // Generate question banner
     const questionBanner = generateGradientOptionFiglet(`Question ${index + 1}`)
 
+    // Shuffle the questions
     const choices = shuffle([question.correctAnswer, ...question.incorrectAnswers]).map((child, ind) => {
       return { key: OPTION_SYMBOLS[ind], name: child, value: child }
     })
+
+    // Ask the question to user
     console.log(questionBanner)
     const answer = await expand({
       message: question.question.text,
-      default: question.correctAnswer,
       choices: choices,
-      expanded: true
+      expanded: true,
     });
 
+    // Update results depending on user input
     if (answer === question.correctAnswer) {
       results.corrects++
     }
@@ -108,18 +119,22 @@ export async function showPlayPage(questions) {
 }
 
 export async function showResultsPage(results) {
-  // Print title
+  // Print result title
+  // TODO: Based on score change text
   console.log(generateGradientOptionFiglet('Congrats!'))
 
-  // Print results to console
+  // Print results to console with style
   console.log(`${chalk.blueBright("Results")}`)
   console.log(`${chalk.blueBright("===============")}`)
   console.log(`${chalk.green("Correct:")} ${results.corrects}`)
   console.log(`${chalk.red("Incorrect:")} ${results.incorrects}`)
   console.log(`${chalk.blueBright("===============")}`)
   console.log(`You got ${(results.corrects / (results.incorrects + results.corrects) * 100).toFixed(2)}% of questions right.`)
+
+  // Ask for a rematch
   const answer = await confirm({ message: GameTexts.PLAY_AGAIN });
 
+  // Return to menu or title
   return answer ? GameStates.PLAY : GameStates.TITLE
 }
 
@@ -141,41 +156,64 @@ export async function showHowToPage() {
 }
 
 export async function fetchQuestions(difficulty = [], limit = 10) {
+  // Empty difficulty array means all difficulties are allowed
   if (difficulty.length === 0) {
     difficulty = ['easy', 'medium', 'hard']
   }
+
+  // Build search params out of config
   const params = new URLSearchParams({
     difficulties: difficulty,
     limit: limit,
   })
 
   try {
-    let questions = await fetch(`https://the-trivia-api.com/v2/questions?${params.toString()}`, {
-      method: 'get',
-    })
+    // Fetch questions
+    let questions = await fetch(`${API_URL}?${params.toString()}`,
+      {
+        method: 'get',
+      }
+    )
+
+    // Convert results to JSON
     questions = await questions.json()
+
     return questions
+
   } catch (err) {
+    // Print error message to user
     console.error('An error happened while getting questions from The Trivia API.')
+
     return []
   }
 }
 
 function generateGradientOptionFiglet(text) {
+  // Pick a random gradient
   const randomGradient = GRADIENTS[Math.floor(Math.random() * GRADIENTS.length)]
+
+  // Generate figlet from given text
   const figletText = figlet.textSync(text, {
     font: "Standard",
     horizontalLayout: "default",
     verticalLayout: "default",
     width: 120,
   })
-  return `\x1Bc\n${gradient[randomGradient].multiline(figletText)}`
+
+  // Clear console and question banner
+  return `
+    \x1Bc
+    \n${gradient[randomGradient].multiline(figletText)}
+  `
 }
 
-// Fisher-Yates shuffle
+// Fisher-Yates shuffle algorithm
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
+    // Select a random index
     let j = Math.floor(Math.random() * (i + 1));
+
+    // Swap current index with selected index
     let temp = arr[i];
     arr[i] = arr[j];
     arr[j] = temp;
