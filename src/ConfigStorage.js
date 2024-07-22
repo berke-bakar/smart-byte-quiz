@@ -150,11 +150,11 @@ class ConfigStorage {
 }
 
 
-const configFileName = 'wait-trivia_config.json';
+const configFileName = 'smart-byte-quiz_config.json';
 const defaultConfig = {
   difficulty: [],
-  // TODO: Don;t forget to change back
-  limit: 2,
+  limit: 10,
+  categories: [],
 };
 
 // Singleton instance
