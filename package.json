@@ -2,7 +2,7 @@
   "name": "smart-byte-quiz",
   "version": "0.0.1",
   "bin": {
-    "smart-byte-quiz": "./bin/bin.js"
+    "smart-byte-quiz": "bin/bin.js"
   },
   "type": "module",
   "scripts": {
