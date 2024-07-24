@@ -1,6 +1,6 @@
 {
   "name": "smart-byte-quiz",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "bin": {
     "smart-byte-quiz": "bin/bin.js"
   },
@@ -19,7 +19,6 @@
   "dependencies": {
     "@inquirer/checkbox": "^2.3.11",
     "@inquirer/confirm": "^3.1.15",
-    "@inquirer/core": "^9.0.2",
     "@inquirer/expand": "^2.1.15",
     "@inquirer/input": "^2.2.2",
     "chalk": "^5.3.0",
