@@ -21,7 +21,11 @@ async function main() {
         state = GameStates[selection]
         break
       case GameStates.SETTINGS:
-        const changes = await showSettingsPage(ConfigInstance.get('difficulty'), ConfigInstance.get('limit'))
+        const currentDifficulties = ConfigInstance.get('difficulties')
+        const currentLimit = ConfigInstance.get('limit')
+        const currentCategories = ConfigInstance.get('categories')
+
+        const changes = await showSettingsPage(currentDifficulties, currentLimit, currentCategories)
         if (changes) {
           const updateResult = ConfigInstance.setBatch(changes)
           if (updateResult.result) {
@@ -37,7 +41,12 @@ async function main() {
         // Reset game score
         results.correct = 0
         results.wrong = 0
-        const questions = await fetchQuestions(ConfigInstance.get('difficulty'), ConfigInstance.get('limit'))
+
+        const difficulties = ConfigInstance.get('difficulties')
+        const limit = ConfigInstance.get('limit')
+        const categories = ConfigInstance.get('categories')
+
+        const questions = await fetchQuestions(difficulties, limit, categories)
         if (questions.length !== 0) {
           results = await showPlayPage(questions)
           state = GameStates.RESULT

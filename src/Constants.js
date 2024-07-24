@@ -47,6 +47,25 @@ export const MENU_OPTIONS = Object.freeze([
   },
 ])
 
+export const ALLOWED_DIFFICULTIES = Object.freeze([
+  'easy',
+  'medium',
+  'hard'
+])
+
+export const ALLOWED_CATEGORIES = Object.freeze([
+  'music',
+  'sport_and_leisure',
+  'film_and_tv',
+  'arts_and_literature',
+  'history',
+  'society_and_culture',
+  'science',
+  'geography',
+  'food_and_drink',
+  'general_knowledge',
+])
+
 export const GRADIENTS = Object.freeze([
   'teen',
   'mind',
@@ -64,7 +83,7 @@ export const GRADIENTS = Object.freeze([
 
 export const RESULTS = Object.freeze([
   'Needs Practice',
-  'Better Luck',
+  'Keep Trying!',
   'Almost There',
   'Congrats!',
   'Perfect!',

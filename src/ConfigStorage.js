@@ -152,7 +152,7 @@ class ConfigStorage {
 
 const configFileName = 'smart-byte-quiz_config.json';
 const defaultConfig = {
-  difficulty: [],
+  difficulties: [],
   limit: 10,
   categories: [],
 };

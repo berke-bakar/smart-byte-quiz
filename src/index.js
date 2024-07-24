@@ -5,7 +5,7 @@ import input from '@inquirer/input'
 import confirm from '@inquirer/confirm'
 import chalk from 'chalk'
 import gradient from "gradient-string";
-import { GameStates, GameTexts, API_URL, GRADIENTS, MAX_API_QUESTION_LIMIT, MENU_OPTIONS, RESULTS } from "./Constants.js";
+import { GameStates, GameTexts, API_URL, GRADIENTS, MAX_API_QUESTION_LIMIT, MENU_OPTIONS, RESULTS, ALLOWED_DIFFICULTIES, ALLOWED_CATEGORIES } from "./Constants.js";
 
 export function showTitlePage() {
   // Print title and subtext
@@ -25,27 +25,38 @@ export async function showMenuPage() {
   return answer
 }
 
-export async function showSettingsPage(currentDifficulties = [], currentLimit) {
+export async function showSettingsPage(currentDifficulties = [], currentLimit = 10, currentCategories = []) {
   // Print title
   console.log(generateGradientOptionFiglet('Settings'))
 
   // Fill the difficulties array if it is empty
   // Empty means all difficulties are allowed
   if (currentDifficulties.length === 0) {
-    currentDifficulties.push('easy', 'medium', 'hard')
+    currentDifficulties = [...ALLOWED_DIFFICULTIES]
+  }
+
+  if (currentCategories.length === 0) {
+    currentCategories = [...ALLOWED_CATEGORIES]
   }
 
   // Save user selections in an object
   let changes = {
-    difficulty: await checkbox({
+    difficulties: await checkbox({
       message: GameTexts.SETTINGS_DIFFICULTY,
-      choices: [
-        { name: 'easy', value: 'easy', checked: currentDifficulties.includes('easy') },
-        { name: 'medium', value: 'medium', checked: currentDifficulties.includes('medium') },
-        { name: 'hard', value: 'hard', checked: currentDifficulties.includes('hard') },
-      ],
+      choices: ALLOWED_DIFFICULTIES.map(val => {
+        return { name: prettify(val), value: val, checked: currentDifficulties.includes(val) }
+      }),
       required: false,
       loop: true
+    }),
+    categories: await checkbox({
+      message: GameTexts.SETTINGS_DIFFICULTY,
+      choices: ALLOWED_CATEGORIES.map(val => {
+        // TODO: name should be in a prettier format
+        return { name: prettify(val), value: val, checked: currentCategories.includes(val) }
+      }),
+      required: false,
+      loop: false
     }),
     limit: await input({
       message: GameTexts.SETTINGS_LIMIT,
@@ -156,16 +167,22 @@ export async function showCreditsPage() {
   })
 }
 
-export async function fetchQuestions(difficulty = [], limit = 10) {
+export async function fetchQuestions(difficulties = [], limit = 10, categories = []) {
   // Empty difficulty array means all difficulties are allowed
-  if (difficulty.length === 0) {
-    difficulty = ['easy', 'medium', 'hard']
+  if (difficulties.length === 0) {
+    difficulties = [...ALLOWED_DIFFICULTIES]
+  }
+
+  // Empty category array means all categories are allowed
+  if (categories.length === 0) {
+    categories = [...ALLOWED_CATEGORIES]
   }
 
   // Build search params out of config
   const params = new URLSearchParams({
-    difficulties: difficulty,
+    difficulties: difficulties,
     limit: limit,
+    categories: categories,
   })
 
   try {
@@ -197,7 +214,7 @@ function generateGradientOptionFiglet(text) {
   const figletText = figlet.textSync(text, {
     font: "Standard",
     horizontalLayout: "default",
-    verticalLayout: "default",
+    verticalLayout: "controlled smushing",
     width: 120,
   })
 
@@ -206,6 +223,22 @@ function generateGradientOptionFiglet(text) {
     \x1Bc
     \n${gradient[randomGradient].multiline(figletText)}
   `
+}
+
+function prettify(str = '') {
+  const splitted = str.split('_')
+  const result = []
+
+  for (const word of splitted) {
+    if (word == 'and') {
+      result.push('&')
+    }
+    else {
+      result.push(word.slice(0, 1).toUpperCase() + word.slice(1))
+    }
+  }
+
+  return result.join(' ')
 }
 
 // Fisher-Yates shuffle algorithm
